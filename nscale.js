@@ -31,7 +31,6 @@ var async = require('async');
 var chalk = require('chalk');
 var serverController = require('./lib/serverController')();
 var nscaleRoot = process.env[(process.platform === 'win32') ? 'USERPROFILE' : 'HOME'] + '/.nscale';
-var Insight = require('insight');
 var tmp = require('tmp');
 var editor = require('editor');
 var pkg = require('./package.json');
@@ -39,12 +38,6 @@ var pkg = require('./package.json');
 var fetchSys = fetcher.fetchSys;
 var currentSys = require('./lib/fetchSys').currentSys;
 
-var insight = new Insight({
-    // Google Analytics tracking code
-    trackingCode: 'UA-29381785-3',
-    packageName: pkg.name,
-    packageVersion: pkg.version
-});
 
 var tableChars = { 'top': '' , 'top-mid': '' , 'top-left': '' , 'top-right': '',
                    'bottom': '' , 'bottom-mid': '' , 'bottom-left': '' , 'bottom-right': '',
@@ -124,12 +117,10 @@ function _quit(err) {
 
 function quit(err) {
   if (err) {
-    insight.track('error', err.message);
+    // do something with error
   }
 
-  // because of analytics tracking
-  // we need to wait ~100ms for it to complete
-  setTimeout(_quit.bind(null, err), 100);
+  // do something before exiting
 }
 
 
@@ -175,7 +166,6 @@ function connect(next, opts) {
 
 
 function showHelp() {
-  insight.track('help');
   var file = path.join(__dirname, './', 'docs', 'help.txt');
   process.stdout.write(fs.readFileSync(file));
   quit();
@@ -207,7 +197,6 @@ function version() {
 
 
 function login() {
-  insight.track('login');
 
   sdk.login('', '', function(err, result) {
     if (result && result.user && result.user.token) {
@@ -224,7 +213,6 @@ function login() {
 }
 
 var listSystems = function() {
-  insight.track('system', 'list');
 
   sdk.ioHandlers(stdoutHandler, stderrHandler);
   var table = new cliTable({chars: tableChars, style: tableStyle,
@@ -277,7 +265,6 @@ var fetchContainerSysRev = function(args) {
 };
 
 var listContainers = function(args) {
-  insight.track('container', 'list');
 
   sdk.ioHandlers(stdoutHandler, stderrHandler);
   var table = new cliTable({chars: tableChars, style: tableStyle,
@@ -306,7 +293,6 @@ var listContainers = function(args) {
 
 
 var getDeployed = function(args) {
-  insight.track('system', 'current');
 
   sdk.ioHandlers(stdoutHandler, stderrHandler);
 
@@ -334,7 +320,6 @@ function validateDockerName(value) {
 }
 
 var createSystem = function() {
-  insight.track('system', 'create');
   sdk.ioHandlers(stdoutHandler, stderrHandler);
   inquirer.prompt([{
     type: 'input',
@@ -374,7 +359,6 @@ var createSystem = function() {
 
 
 var linkSystem = function(args) {
-  insight.track('system', 'link');
 
   sdk.ioHandlers(stdoutHandler, stderrHandler);
   sdk.linkSystem(args._[0] || '.', process.cwd(), function(err) {
@@ -385,7 +369,6 @@ var linkSystem = function(args) {
 
 
 var unlinkSystem = function(args) {
-  insight.track('system', 'unlink');
 
   fetchSys(1, args);
   sdk.ioHandlers(stdoutHandler, stderrHandler);
@@ -396,7 +379,6 @@ var unlinkSystem = function(args) {
 
 
 var buildContainer = function(args) {
-  insight.track('container', 'build');
 
   var sys;
   var revision;
@@ -464,7 +446,6 @@ var buildContainer = function(args) {
 
 
 var buildAllContainers = function(args) {
-  insight.track('container', 'buildall');
 
   var sys;
   var revision;
@@ -514,7 +495,6 @@ var buildAllContainers = function(args) {
 
 
 var listRevisions = function(args) {
-  insight.track('revision', 'list');
 
   fetchSys(1, args);
 
@@ -539,7 +519,6 @@ var listRevisions = function(args) {
 
 
 var getRevision = function(args) {
-  insight.track('revision', 'get');
 
   fetchSys(3, args);
 
@@ -557,7 +536,6 @@ var getRevision = function(args) {
 
 
 var listTimeline = function(args) {
-  insight.track('timeline', 'list');
 
   sdk.ioHandlers(stdoutHandler, stderrHandler);
   var table = new cliTable({chars: tableChars,
@@ -583,7 +561,6 @@ var listTimeline = function(args) {
 
 
 var deployRevision = function(args) {
-  insight.track('revision', 'deploy');
 
   fetchSys(3, args);
 
@@ -599,7 +576,6 @@ var deployRevision = function(args) {
 
 
 var markRevisionDeployed = function(args) {
-  insight.track('revision', 'mark');
 
   fetchSys(2, args);
 
@@ -617,7 +593,6 @@ var markRevisionDeployed = function(args) {
 
 
 var previewRevision = function(args) {
-  insight.track('revision', 'preview');
 
   fetchSys(3, args);
   sdk.ioHandlers(stdoutHandler, stderrHandler);
@@ -650,7 +625,6 @@ var previewRevision = function(args) {
 
 
 var analyzeSystem = function(args) {
-  insight.track('system', 'analyze');
 
   fetchSys(2, args);
 
@@ -668,7 +642,6 @@ var analyzeSystem = function(args) {
 
 
 var checkSystem = function(args) {
-  insight.track('system', 'check');
 
   fetchSys(2, args);
   sdk.ioHandlers(stdoutHandler, stderrHandler);
@@ -711,7 +684,6 @@ var checkSystem = function(args) {
 
 
 var fixSystem = function(args) {
-  insight.track('system', 'fix');
 
   fetchSys(2, args);
   sdk.ioHandlers(stdoutHandler, stderrHandler);
@@ -730,7 +702,6 @@ var fixSystem = function(args) {
 
 
 var infoSystem = function(args) {
-  insight.track('system', 'info');
 
   fetchSys(2, args);
 
@@ -754,7 +725,6 @@ var infoSystem = function(args) {
 
 
 var compileSystem = function(args) {
-  insight.track('system', 'compile');
 
   fetchSys(1, args);
   var message = args.m || args.message || 'system compile';
@@ -768,7 +738,6 @@ var compileSystem = function(args) {
 var commitSystem = function(args) {
   var commitMsg = '';
   var first = true;
-  insight.track('system', 'commit');
 
   fetchSys(1, args);
   var message = args.m || args.message;
@@ -813,7 +782,6 @@ var commitSystem = function(args) {
 
 
 var stopSystem = function(args) {
-  insight.track('system', 'stop');
 
   fetchSys(2, args);
   sdk.ioHandlers(stdoutHandler, stderrHandler);
@@ -832,7 +800,6 @@ var stopSystem = function(args) {
 
 
 var compileSystem = function(args) {
-  insight.track('system', 'compile');
 
   fetchSys(1, args);
   var message = args.m || args.message || 'system compile';
@@ -844,7 +811,6 @@ var compileSystem = function(args) {
 
 
 var logout = function() {
-  insight.track('logout');
   cfg.clearToken();
   quit();
 };
@@ -852,7 +818,6 @@ var logout = function() {
 
 
 var useSystem = function(args) {
-  insight.track('system', 'use');
 
   var port = args._[1];
   var config;
@@ -871,7 +836,6 @@ var useSystem = function(args) {
 };
 
 function startServer() {
-  insight.track('server', 'start');
   console.log('nscale servers starting..');
 
   var servers = [
@@ -882,7 +846,6 @@ function startServer() {
 }
 
 function stopServer() {
-  insight.track('server', 'stop');
   console.log('nscale servers stopping..');
 
   var servers = [
@@ -893,7 +856,6 @@ function stopServer() {
 }
 
 function serverStatus() {
-  insight.track('server', 'status');
 
   var servers = [
     'nscale-kernel'
@@ -914,7 +876,6 @@ function serverStatus() {
 }
 
 function logServer(args) {
-  insight.track('server', 'logs');
   var logDir = nscaleRoot + '/log';
   var logfile = args[2] || 'kernel.log';
   var logProcess = exec('tail -n 100 -f ' + logDir + '/' + logfile);
@@ -966,14 +927,6 @@ program.register('version', version);
 
 
 function start(argv) {
-
-  // ask for permission the first time
-  if (insight.optOut === undefined) {
-    return insight.askPermission(null, function() {
-      console.log(); // empty line
-      start(argv);
-    });
-  }
 
   var remaining = program.parse(argv);
 
