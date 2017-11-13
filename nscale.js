@@ -930,8 +930,8 @@ program.register('logs', logServer);
 program.register('server status', serverStatus);
 program.register('status', serverStatus);
 
+program.register('systems', connect.bind(null, listSystems));
 program.register('system list', connect.bind(null, listSystems));
-program.register('list', connect.bind(null, listSystems));
 program.register('system create', connect.bind(null, createSystem));
 program.register('system link', connect.bind(null, linkSystem));
 program.register('system unlink', connect.bind(null, unlinkSystem));
@@ -948,16 +948,19 @@ program.register('system compile', connect.bind(null, compileSystem));
 program.register('compile', connect.bind(null, compileSystem));
 program.register('system use', useSystem);
 
+program.register('containers', connect.bind(null, listContainers));
 program.register('container list', connect.bind(null, listContainers));
 program.register('container build', connect.bind(null, buildContainer));
 program.register('container buildall', connect.bind(null, buildAllContainers));
 
+program.register('revisions', connect.bind(null, listRevisions));
 program.register('revision list', connect.bind(null, listRevisions));
 program.register('revision get', connect.bind(null, getRevision));
 program.register('revision deploy', connect.bind(null, deployRevision));
 program.register('revision mark', connect.bind(null, markRevisionDeployed));
 program.register('revision preview', connect.bind(null, previewRevision));
 
+program.register('timeline', connect.bind(null, listTimeline));
 program.register('timeline list', connect.bind(null, listTimeline));
 
 program.register('login', connect.bind(null, login));
