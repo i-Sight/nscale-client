@@ -931,17 +931,21 @@ program.register('server status', serverStatus);
 program.register('status', serverStatus);
 
 program.register('system list', connect.bind(null, listSystems));
+program.register('list', connect.bind(null, listSystems));
 program.register('system create', connect.bind(null, createSystem));
 program.register('system link', connect.bind(null, linkSystem));
 program.register('system unlink', connect.bind(null, unlinkSystem));
 program.register('system current', connect.bind(null, getDeployed));
 program.register('system analyze', connect.bind(null, analyzeSystem));
 program.register('system check', connect.bind(null, checkSystem));
+program.register('check', connect.bind(null, checkSystem));
 program.register('system fix', connect.bind(null, fixSystem));
+program.register('fix', connect.bind(null, fixSystem));
 program.register('system stop', connect.bind(null, stopSystem));
 program.register('system info', connect.bind(null, infoSystem));
 program.register('system commit', connect.bind(null, commitSystem));
 program.register('system compile', connect.bind(null, compileSystem));
+program.register('compile', connect.bind(null, compileSystem));
 program.register('system use', useSystem);
 
 program.register('container list', connect.bind(null, listContainers));
@@ -977,7 +981,7 @@ function start(argv) {
 
   var remaining = program.parse(argv);
 
-  if (remaining && remaining.v) {
+  if (remaining && (remaining.v || remaining.version)) {
     return version();
   }
   else if (remaining) {
