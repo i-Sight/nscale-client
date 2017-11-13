@@ -94,33 +94,25 @@ var stderrHandler = function(err) {
 
 
 
-function _quit(err) {
-  var needsError = callbackCalled;
-
-  function done() {
-    if (err && !needsError) {
-      console.log('not ok!');
-      stderrHandler(err);
-      process.exit(1);
-    }
-    process.exit(0);
-  }
-
-  callbackCalled = true;
-  if (sdk.connected) {
-    sdk.quit(done);
-  }
-  else {
-    done();
-  }
-}
-
 function quit(err) {
-  if (err) {
-    // do something with error
-  }
-
-  // do something before exiting
+  var needsError = callbackCalled;
+  
+    function done() {
+      if (err && !needsError) {
+        console.log('not ok!');
+        stderrHandler(err);
+        process.exit(1);
+      }
+      process.exit(0);
+    }
+  
+    callbackCalled = true;
+    if (sdk.connected) {
+      sdk.quit(done);
+    }
+    else {
+      done();
+    }
 }
 
 
